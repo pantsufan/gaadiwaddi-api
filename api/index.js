@@ -1,5 +1,4 @@
 const app = require("express")();
-const { v4 } = require("uuid");
 const cheerio = require("cheerio");
 const cors = require("cors");
 const rs = require("request");
@@ -7,15 +6,16 @@ const port = 5000;
 app.use(cors());
 const baseURL = "https://gaadiwaadi.com/";
 // Homepage
-app.get("/api/", (req, res) => {
-  let info = {
+app.get("/", (req, res) => {
+  let data = {
     info: "GaadiWaddi.com Unofficial API",
     news: "/api/news/:page",
     details: "/api/get/:id",
     search: "/api/search/:word/:page",
   };
-  res.send(info);
+  res.json({data});
 });
+// News Page
 app.get("/api/news/:page", (req, res) => {
   let results = [];
   let page = req.params.page;
@@ -32,7 +32,7 @@ app.get("/api/news/:page", (req, res) => {
           let id1 = $(this).children("a").attr().href;
           let id2 = id1.replace("https://gaadiwaadi.com/", "");
           let id = id2.replace("/", "");
-          let image = $(this).children("a").children("img").attr().src;
+          let image = $(this).children("a").children("img").attr('data-src');
           results[index] = { title, id, image };
         });
         res.status(200).json({ results });
@@ -46,7 +46,8 @@ app.get("/api/news/:page", (req, res) => {
 app.get("/api/get/:id", (req, res) => {
   let results = [];
   let id = req.params.id;
-  url = `${baseURL}/${id}`;
+  url = `${baseURL}${id}`;
+  console.log(url)
   rs(url, (error, response, html) => {
     if (!error) {
       try {
@@ -72,7 +73,7 @@ app.get("/api/get/:id", (req, res) => {
           .children(".td-post-content")
           .children("div")
           .children("img")
-          .attr().src;
+          .attr('data-src');
         results = { title, image, subtitle, desc };
         res.status(200).json({ results });
       } catch (e) {
@@ -100,7 +101,7 @@ app.get("/api/search/:word/:page", (req, res) => {
           let id1 = $(this).children("a").attr().href;
           let id2 = id1.replace("https://gaadiwaadi.com/", "");
           let id = id2.replace("/", "");
-          let image = $(this).children("a").children("img").attr().src;
+          let image = $(this).children("a").children("img").attr('data-src');
           results[index] = { title, id, image };
         });
         res.status(200).json({ results });
