@@ -6,7 +6,7 @@ const port = 5000;
 app.use(cors());
 const baseURL = "https://gaadiwaadi.com/";
 // Homepage
-app.get("/", (req, res) => {
+app.get("/api/", (req, res) => {
   let data = {
     info: "GaadiWaddi.com Unofficial API",
     news: "/api/news/:page",
